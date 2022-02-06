@@ -18,7 +18,7 @@ Copy this folder to `<config_dir>/custom_components/hkbus_sensor/`.
 
 1. Go to the community tab of your home assistant installation
 2. Click settings
-3. Add "https://github.com/wymanhns/translink-sensor" with the type **Integration**
+3. Add "https://github.com/wymanhns/HKBUS-Sensor" with the type **Integration**
 4. Click Save
 5. Restart home assistant
 
