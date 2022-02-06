@@ -1,0 +1,24 @@
+old yaml
+
+  - platform: rest
+    resource: https://data.etabus.gov.hk/v1/transport/kmb/eta/26AC2D471648CA0C/43A/1
+    name: KMB 43A
+    json_attributes_path: '$..data[?(@.dir=="O"&&@.eta_seq==1)]'
+    json_attributes:
+      - co
+      - route
+      - dir
+      - dest_tc
+      - eta
+      - rmk_tc
+    value_template: '1'   
+    force_update: true
+    scan_interval: 60
+    
+  - platform: template
+    scan_interval: 60
+    sensors:
+      kmb_43a_time:
+        value_template: '{{ ((as_timestamp(states.sensor.kmb_43a.attributes.eta) - as_timestamp(now())) / 60)| int}}'   #
+        unit_of_measurement: '分鐘'
+        

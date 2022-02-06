@@ -1,0 +1,1 @@
+"""Hkbus Sensor."""
