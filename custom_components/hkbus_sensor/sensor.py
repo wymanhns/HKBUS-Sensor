@@ -52,8 +52,6 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
     res_list = 'x'
     session = async_get_clientsession(hass)
     
-    #hass.states.async_set("HkBus_sensor.world", "WYMANHNS")
-    
     async_add_devices(
         [HkBusSensor(name, stopid, routenumber, apikey, busdir)],update_before_add=True)
     
@@ -61,7 +59,7 @@ class HkBusSensor(Entity):
 
     def __init__(self, name, stopid, routenumber, apikey, busdir):
         """Initialize the sensor."""
-        #_LOGGER.error('插件初始')
+        #_LOGGER.warning('插件初始')
         self._name = name
         self._stopid = stopid
         self._routenumber = routenumber
@@ -71,14 +69,14 @@ class HkBusSensor(Entity):
         self._icon = DEFAULT_ICON
 
     @property
-    def device_state_attributes(self):
-        #_LOGGER.error('輪出 ' + self._data)
+    def extra_state_attributes(self):
+        #_LOGGER.warning('輪出 ' + self._data)
         attr = {}
 
         json_data = json.loads(self._data)
         
         find1 = jmespath.search('data[?dir==`'  + self._busdir + '`]' ,json_data)
-        _LOGGER.error('比對結果 : ' + str(len(find1)))
+        #_LOGGER.warning('比對結果 : ' + str(len(find1)))
 
         attr["route_number"] = self._routenumber
         attr["stop_id"] = self._stopid
@@ -88,7 +86,7 @@ class HkBusSensor(Entity):
         
         attr["icon"] = 'mdi:bus-clock'
 
-        #_LOGGER.error('state更新 ' + str(find1[0]['rmk_tc']))
+        #_LOGGER.warning('state更新 ' + str(find1[0]['rmk_tc']))
         attr["rmk_tc"] = str(find1[0]['rmk_tc'])
 
         if len(find1) == 3 :
@@ -117,7 +115,7 @@ class HkBusSensor(Entity):
                 self._state = 0
             attr["buses_1"] = ''
             attr["buses_2"] = ''
-        
+        #_LOGGER.warning('state更新 ' + str(find1[0]['dest_en']))
         try:
             countdowntimes = round((RLtime1 - Rnowtime).total_seconds() // 60 )
             if countdowntimes < 0 :
@@ -130,31 +128,32 @@ class HkBusSensor(Entity):
         return attr
 
     async def asyncGet(self,url,header):
-        _LOGGER.error('更新url ' + url)
+        #_LOGGER.warning('更新url :' + url)
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
-                #_LOGGER.error('res: ' + str(response.status))
+                _LOGGER.warning('res : ' + str(response.status))
                 html = await response.json()
-                #_LOGGER.error('html: ' + str(html))
+                #_LOGGER.warning('更新url END' )
             return html
 
     async def yunmi_login(self):
-        #_LOGGER.error('敗 yunmi login to update  ')
+        #_LOGGER.warning('yunmi login to update  ')
         #url="http://data.etabus.gov.hk/v1/transport/kmb/eta/26AC2D471648CA0C/43A/1"
         url="http://data.etabus.gov.hk/v1/transport/kmb/eta/" + self._stopid + "/" + self._routenumber + "/1"
         self._name = 'HK BUS ' + self._routenumber
         headers="1"
-        #_LOGGER.error('敗 yunmi url: ' + url)
+        #_LOGGER.warning('敗 yunmi url : ' + url)
         res_list = await self.asyncGet(url,headers)
-        #_LOGGER.error('更新3 : ' + str(res_list['data']))
+        #_LOGGER.warning('yunmi login to update END ')
         return res_list
 
     @asyncio.coroutine
     async def async_update(self):
-        #_LOGGER.error('更新 1')
+        #_LOGGER.warning('Async_update')
         res_list = await self.yunmi_login()
-        
         self._data = json.dumps(res_list)
+        #_LOGGER.warning('Async_update END : ' )    
+        
         return self._state
 
     @property
