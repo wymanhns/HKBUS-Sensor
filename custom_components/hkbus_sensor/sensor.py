@@ -131,7 +131,7 @@ class HkBusSensor(Entity):
         #_LOGGER.warning('更新url :' + url)
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
-                _LOGGER.warning('res : ' + str(response.status))
+                #_LOGGER.warning('res : ' + str(response.status))
                 html = await response.json()
                 #_LOGGER.warning('更新url END' )
             return html
